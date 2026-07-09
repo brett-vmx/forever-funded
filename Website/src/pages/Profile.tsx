@@ -1,18 +1,38 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useSession } from '../lib/useSession'
+import { REVIEW_DOMAIN } from '../lib/constants'
 import { Logo } from '../components/ui/LogoMark'
 import { Button } from '../components/ui/Button'
 
-/**
- * Minimal launch profile. Intentionally NOT coupled to the v1 profiles/reviews
- * schema (not applied yet). The full portal — live review address, remaining
- * credits, history — is the v2 build.
- */
 export function Profile() {
   const { session } = useSession()
   const navigate = useNavigate()
   const email = session?.user.email
+  const userId = session?.user.id
+
+  const [reviewSlug, setReviewSlug] = useState<string | null>(null)
+  const [loadingSlug, setLoadingSlug] = useState(true)
+
+  useEffect(() => {
+    if (!supabase || !userId) {
+      setLoadingSlug(false)
+      return
+    }
+    setLoadingSlug(true)
+    supabase
+      .from('profiles')
+      .select('review_slug')
+      .eq('id', userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setReviewSlug(data?.review_slug ?? null)
+        setLoadingSlug(false)
+      })
+  }, [userId])
+
+  const reviewAddress = reviewSlug ? `${reviewSlug}@${REVIEW_DOMAIN}` : null
 
   async function signOut() {
     await supabase?.auth.signOut()
@@ -46,13 +66,18 @@ export function Profile() {
             a test” button in whatever email tool you write in and send your draft there.
             Your point-by-point report comes back in about 83 seconds.
           </p>
-          <p className="mt-4 rounded-lg bg-band-emerald px-4 py-3 text-sm text-primary-dark">
-            Check your inbox for a welcome email with your review address.
-          </p>
+          {loadingSlug ? null : reviewAddress ? (
+            <p className="mt-4 rounded-lg bg-band-emerald px-4 py-3 font-mono text-sm text-primary-dark">
+              {reviewAddress}
+            </p>
+          ) : (
+            <p className="mt-4 rounded-lg bg-band-emerald px-4 py-3 text-sm text-primary-dark">
+              Check your inbox for a welcome email with your review address.
+            </p>
+          )}
         </div>
 
-        {/* TODO(v2): live review address, remaining credits, review history —
-            wire once the profiles/reviews tables are applied. */}
+        {/* TODO(v2): remaining credits, review history. */}
       </main>
     </div>
   )

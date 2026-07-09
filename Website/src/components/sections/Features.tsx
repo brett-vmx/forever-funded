@@ -229,7 +229,7 @@ function ComboFeature({ panels }: { panels: ComboPanel[] }) {
             {p.envelopes ? (
               <div className="mt-6 flex justify-center gap-4 sm:gap-6">
                 {p.envelopes.map((e) => (
-                  <div key={e.label} className="w-[190px]">
+                  <div key={e.label} className="w-[140px] max-w-[45%] sm:w-[190px]">
                     <EnvelopeCard {...e} />
                   </div>
                 ))}
