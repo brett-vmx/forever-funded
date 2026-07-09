@@ -1,0 +1,23 @@
+{
+  "name": "forever-funded-email-coach-webhook",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Inbound webhook that receives a submitted supporter email from Postmark, evaluates it with the Forever Funded Email Coach (Anthropic API), stores it in Supabase, and emails back the coaching report. Runs on Cloudflare Workers.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "@cloudflare/puppeteer": "^1.1.0",
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

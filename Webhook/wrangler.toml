@@ -1,0 +1,48 @@
+# Cloudflare Workers configuration (replaces the old vercel.json).
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "forever-funded-email-coach"
+main = "api/inbound.js"
+compatibility_date = "2026-07-01"
+
+# Lets npm packages that expect small pieces of Node.js work in the Worker.
+compatibility_flags = ["nodejs_compat"]
+
+# Non-secret configuration. These are safe to keep in this file.
+# (Secrets — API keys — are NOT set here; use `wrangler secret put NAME`
+# so they're stored encrypted in Cloudflare, never in a file.)
+[vars]
+ANTHROPIC_MODEL = "claude-sonnet-4-6"
+FROM_EMAIL = "coach@review.foreverfunded.org"
+REVIEW_DOMAIN = "review.foreverfunded.org"
+
+# Visual rendering soft-rollout gate (v2 path only). Comma-separated list of
+# profile emails that get a mobile visual render attached to the Coach call.
+# Everyone else stays text-only. Set to "*" to enable for ALL v2 submissions.
+# Leave empty to disable rendering entirely. Render failures always fall back
+# to text-only regardless of this setting.
+RENDER_ALLOWLIST = "*"
+
+# Cloudflare Browser Rendering (Puppeteer binding) — first-party, no API token.
+# Used to render the email HTML to a mobile-width image, then tiled and passed
+# to the Coach as image blocks. See lib/render.js.
+[browser]
+binding = "BROWSER"
+
+# Secrets to set with `wrangler secret put <NAME>` (one command per secret):
+#   ANTHROPIC_API_KEY
+#   POSTMARK_SERVER_TOKEN
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+#   SUPABASE_WEBHOOK_SECRET (v2 only — a random string you choose; the
+#     Supabase Database Webhook on `profiles` INSERT must send the same
+#     value in an `x-webhook-secret` header, or /hooks/new-profile rejects it)
+#
+# For local testing with `wrangler dev`, put the same four values in a file
+# named .dev.vars (see .dev.vars.example) — wrangler reads it automatically
+# and it stays on your machine.
+
+# Enables the Logs tab in the Cloudflare dashboard for this Worker, so you
+# can see console.error output when debugging (README step 7).
+[observability]
+enabled = true

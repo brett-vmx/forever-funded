@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   Forever Funded — design tokens (single source of truth).
+   Defined once here; reused everywhere via Tailwind utilities (bg-primary,
+   text-ink, font-heading, etc.). The Course pages will inherit this system,
+   so add new tokens here rather than hardcoding one-off colors in components.
+   =========================================================================== */
+@theme {
+  /* Brand — emerald */
+  --color-primary: #059669; /* brand */
+  --color-primary-dark: #047857; /* hover, links, text-on-light */
+  --color-primary-light: #10b981; /* accent / highlight */
+
+  /* Forest Hearth accents */
+  --color-brick: #852525;
+  --color-brown: #662b00;
+  --color-camel: #e6a373; /* warm band background */
+
+  /* Ink & neutrals */
+  --color-ink: #17231d; /* body text: dark warm green-charcoal */
+  --color-muted: #5b665f; /* secondary text */
+  --color-bg: #fcfcfb; /* page background: clean near-white, NOT beige */
+  --color-surface: #ffffff; /* cards */
+  --color-border: #e8e8e2; /* hairlines */
+
+  /* Alternating section-band tints (Fluent Forever style — pale, not saturated) */
+  --color-band-emerald: #f0faf6;
+  --color-band-tan: #fbf3ea;
+  --color-band-brick: #fbf1f0;
+
+  /* Type */
+  --font-heading: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Motion */
+  --ease-swipe: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Base ----------------------------------------------------------------
+   Wrapped in @layer base so Tailwind utilities (e.g. text-white on a heading)
+   still win — unlayered rules would otherwise override every color utility. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Offset smooth-scroll anchors so the sticky header doesn't cover headings */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    color: var(--color-ink);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+/* Respect reduced-motion globally: kill smooth scroll + long transitions. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Visible focus for keyboard users (accessibility). */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Horizontal logo marquee (mobile "Works with" strip). The track holds two
+   identical copies of the logos, so a -50% shift loops seamlessly. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

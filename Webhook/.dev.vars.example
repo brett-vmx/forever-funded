@@ -1,0 +1,26 @@
+# Copy this file to .dev.vars for LOCAL testing with `wrangler dev`.
+# Never commit real values. In production these same four values are set as
+# encrypted secrets with `wrangler secret put <NAME>` instead.
+#
+# (If you previously filled in a .env file for the Vercel version, copy the
+# same values over — the names are identical.)
+
+# --- Anthropic ---
+# From console.anthropic.com. This key calls the Coach.
+ANTHROPIC_API_KEY=
+
+# --- Postmark ---
+# Server API Token, found in Postmark: your Server > API Tokens.
+# Used to SEND the report back (separate from the inbound webhook, which
+# doesn't need a token since Postmark calls YOU).
+POSTMARK_SERVER_TOKEN=
+
+# --- Supabase ---
+# Project URL and SERVICE ROLE key (not the public anon key — this function
+# runs server-side and needs full read/write access to your tables).
+# Found in Supabase: Project Settings > API.
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Note: ANTHROPIC_MODEL, FROM_EMAIL, and REVIEW_DOMAIN are not secrets —
+# they live in wrangler.toml under [vars].

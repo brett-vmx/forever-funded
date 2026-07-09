@@ -1,0 +1,15 @@
+.DS_Store
+node_modules
+.wrangler
+
+# Env — secrets stay local.
+.env
+.env.*
+!.env.example
+
+dist
+dist-ssr
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea
