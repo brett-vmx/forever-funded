@@ -2,6 +2,7 @@ import { Section } from '../ui/Section'
 import { Button } from '../ui/Button'
 import { EmailCapture } from '../ui/EmailCapture'
 import { useAuthModal } from '../auth/AuthModal'
+import { LogoMark } from '../ui/LogoMark'
 
 /** Sketch of a Coach report: a few lines, each flagged good/worth-considering/needs-fixing. */
 function ChecklistSketch() {
@@ -61,15 +62,20 @@ export function CourseTeaser() {
   return (
     <Section id="course" tint="tan">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold sm:text-4xl">
+        <LogoMark className="mx-auto h-12 w-12 text-primary" />
+        <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
           More than a tool.
           <br />
           <span className="text-primary">A whole new way to write.</span>
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-muted">
-          The Email Coach is the fast way to sharpen a letter before you send it. The
-          Forever Funded Course is the deeper way: the full framework the Coach is built
-          on, in a set of short, practical lessons.
+          The Forever Funded <strong className="font-semibold text-ink">Email Coach</strong>{' '}
+          is the fast way to sharpen a letter before you send it.
+        </p>
+        <p className="mt-4 text-lg leading-relaxed text-muted">
+          The Forever Funded <strong className="font-semibold text-ink">Email Course</strong>{' '}
+          is the deeper way: the full framework the Coach is built on, in a set of short,
+          practical lessons.
         </p>
       </div>
 
