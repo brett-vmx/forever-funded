@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# App/auth routes have no indexable content (client-rendered, gated).
+Disallow: /profile
+Disallow: /checkout
+Disallow: /auth/
+
+Sitemap: https://foreverfunded.org/sitemap.xml

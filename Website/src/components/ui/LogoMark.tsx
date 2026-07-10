@@ -9,7 +9,10 @@
 export function LogoMark({ className = '' }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 178 178"
+      // viewBox tightened to the mark's actual bounds (x 36–98, y 22–138) and
+      // squared around its center, so it sits centered in any square container
+      // instead of drifting up-and-left inside the old 0 0 178 178 box.
+      viewBox="9 22 116 116"
       className={className}
       role="img"
       aria-label="Forever Funded"
