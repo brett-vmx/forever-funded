@@ -69,12 +69,12 @@ export function CourseTeaser() {
           <span className="text-primary">A whole new way to write.</span>
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-muted">
-          The Forever Funded <strong className="font-semibold text-ink">Email Coach</strong>{' '}
-          is the fast way to sharpen a letter before you send it.
+          The <strong className="font-semibold text-ink">Email Coach</strong> is the fast
+          way to sharpen a letter before you send it.
         </p>
         <p className="mt-4 text-lg leading-relaxed text-muted">
-          The Forever Funded <strong className="font-semibold text-ink">Email Course</strong>{' '}
-          is the deeper way: the full framework the Coach is built on, in a set of short,
+          The <strong className="font-semibold text-ink">Email Course</strong> is the
+          deeper way: the full framework the Coach is built on, in a set of short,
           practical lessons.
         </p>
       </div>
