@@ -21,15 +21,18 @@ export function Hero() {
             Stop sweating the <span className="text-primary">send button.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Before you send your next update, send it to Coach!
+            Before you send your next supporter update, send it to Coach!
           </p>
           <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-muted">
             Coach checks for{' '}
-            <strong className="font-semibold text-ink">22 best practices</strong> and{' '}
-            <strong className="font-semibold text-ink">26 quiet mistakes</strong> that
-            people in full-time ministry commonly make when emailing supporters. His
-            seasoned feedback will keep your supporters engaged, praying for you, and
-            supporting you for the long haul.
+            <strong className="font-semibold text-ink">22 best practices</strong> that
+            will keep your supporters engaged, praying for you, and supporting you for
+            the long haul.
+          </p>
+          <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-muted">
+            He also checks for{' '}
+            <strong className="font-semibold text-ink">26 common mistakes</strong> that
+            cause supporters to quietly archive your message.
           </p>
           <p className="mt-4 max-w-xl text-lg font-semibold leading-relaxed text-ink">
             Try Coach for free and see what he finds.
