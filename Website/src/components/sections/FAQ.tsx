@@ -51,6 +51,10 @@ const FAQS: { q: string; a: ReactNode }[] = [
     a: 'Not currently. Stello sends an encrypted link rather than a normal email, so there’s no draft for the Coach to review. If you use Stello, you can still get a review by pasting your draft into a regular email (Gmail, Outlook) and sending that to your review address instead.',
   },
   {
+    q: 'What about Epistle?',
+    a: 'The Coach can review the text and first image from your Epistle email today. Full support for multi-image layouts is coming soon. For the most complete review right now, you can also paste your letter’s text into a plain email and send that to your review address.',
+  },
+  {
     q: 'What if my email service provider doesn’t have a "Send a test email" feature?',
     a: 'Send the email to yourself and only yourself. Then forward that email to your personal review email address.',
   },
