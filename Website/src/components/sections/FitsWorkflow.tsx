@@ -4,7 +4,6 @@ import kit from '../../assets/esp/Kit.webp'
 import mailerlite from '../../assets/esp/mailerlite.jpg'
 import constantContact from '../../assets/esp/constant-contact.jpg'
 import missio from '../../assets/esp/missio.jpg'
-import stello from '../../assets/esp/stello.png'
 import gmail from '../../assets/esp/gmail.svg'
 import outlook from '../../assets/esp/outlook.webp'
 
@@ -18,7 +17,6 @@ const LOGOS = [
   { name: 'MailerLite', src: mailerlite },
   { name: 'Constant Contact', src: constantContact },
   { name: 'Missio', src: missio, contain: true, bg: 'bg-black' },
-  { name: 'Stello', src: stello },
   { name: 'Gmail', src: gmail, contain: true, bg: 'bg-white', border: true },
   { name: 'Outlook', src: outlook, border: true },
 ]
