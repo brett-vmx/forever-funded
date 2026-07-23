@@ -42,20 +42,24 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
 }
 
 function Modal({ mode, onClose }: { mode: Mode; onClose: () => void }) {
+  const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const firstNameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
 
-  // Focus the email field on open; close on Escape.
+  // Focus the first field for the mode (first name on signup, email on
+  // login, since login is for existing users who already have a name on
+  // file); close on Escape.
   useEffect(() => {
-    inputRef.current?.focus()
+    ;(mode === 'signup' ? firstNameRef.current : emailRef.current)?.focus()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, mode])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -66,9 +70,36 @@ function Modal({ mode, onClose }: { mode: Mode; onClose: () => void }) {
     }
     setStatus('sending')
     setErrorMsg('')
+    const trimmedEmail = email.trim()
+    const trimmedFirstName = firstName.trim()
+
+    if (mode === 'login') {
+      const { data: hasAccount, error: checkError } = await supabase.rpc(
+        'email_has_account',
+        { p_email: trimmedEmail },
+      )
+      if (checkError) {
+        setStatus('error')
+        setErrorMsg(checkError.message)
+        return
+      }
+      if (!hasAccount) {
+        setStatus('error')
+        setErrorMsg('Sorry, we can’t find an account associated with that email address.')
+        return
+      }
+    }
+
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      email: trimmedEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Only meaningful the moment an account is first created — the
+        // handle_new_user trigger reads it off auth.users' metadata.
+        ...(mode === 'signup' && trimmedFirstName
+          ? { data: { first_name: trimmedFirstName } }
+          : {}),
+      },
     })
     if (error) {
       setStatus('error')
@@ -149,11 +180,29 @@ function Modal({ mode, onClose }: { mode: Mode; onClose: () => void }) {
             )}
 
             <form onSubmit={handleSubmit} className="mt-5">
+              {mode === 'signup' && (
+                <>
+                  <label htmlFor="auth-first-name" className="sr-only">
+                    First name
+                  </label>
+                  <input
+                    ref={firstNameRef}
+                    id="auth-first-name"
+                    type="text"
+                    required
+                    autoComplete="given-name"
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="mb-3 w-full rounded-xl border-0 bg-band-emerald px-4 py-3 text-ink placeholder:text-muted/70 focus:outline-none"
+                  />
+                </>
+              )}
               <label htmlFor="auth-email" className="sr-only">
                 Email address
               </label>
               <input
-                ref={inputRef}
+                ref={emailRef}
                 id="auth-email"
                 type="email"
                 required
@@ -179,9 +228,11 @@ function Modal({ mode, onClose }: { mode: Mode; onClose: () => void }) {
                     : 'Send me a magic link'}
               </Button>
             </form>
-            <p className="mt-3 text-center text-xs text-muted">
-              No credit card required.
-            </p>
+            {mode === 'signup' && (
+              <p className="mt-3 text-center text-xs text-muted">
+                No credit card required.
+              </p>
+            )}
           </>
         )}
       </div>

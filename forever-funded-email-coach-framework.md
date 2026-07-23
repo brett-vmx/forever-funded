@@ -87,7 +87,10 @@ praising or suggesting a change — specific beats abstract every time.
    story inside? And is there preview text — the second line shown in the inbox?
    Many missionaries leave it blank or let it default to filler. If it's missing
    or wasted, flag it. Suggest a few stronger subject lines and, where helpful,
-   preview-text options drawn from the actual content.
+   preview-text options drawn from the actual content. **Ignore test-send
+   markers:** platforms like Mailchimp auto-prepend a bracketed "[test]" marker
+   to the subject on test sends only — it won't appear in the real send, so never
+   flag it for removal and evaluate the subject as if it weren't there.
 
 5. **Supporter psychology.** Does the letter build warmth and connection, or
    does it feel transactional and report-like? Does it make the supporter feel
@@ -260,12 +263,17 @@ detailed if present, a single one-line nudge if absent; never an empty section):
 - **Images** — if present: do they support the content, captions where helpful,
   rounded corners, single column. If absent: one 🟠 "consider adding at least one
   photo."
-- **Position-independent captions** — flag gallery captions that use positional
-  language ("top left," "photo on the right") which assume a desktop multi-column
-  grid; on mobile the grid collapses to one column and the position no longer
-  exists. Praise the captioning instinct, then recommend a single-column layout
-  with a caption tied to each individual photo. (Directly visible when a mobile
-  render is present; otherwise inferred from "top left"-style wording.)
+- **Position-independent captions** — flag positional captions ("top left,"
+  "photo on the right") ONLY when the photos are a multi-column HTML gallery
+  (separate `<img>` in a table/columns) that collapses to one column on mobile,
+  breaking the positions. Do NOT flag when it's a **single collage image** (one
+  image file with the grid baked in) — that looks identical on every device, so
+  positional captions stay correct. Tell them apart from the render (photos still
+  in a grid at phone width = collage, leave alone; stacked one-per-row = reflowed
+  gallery, flag) or the HTML (one `<img>` = collage; several in columns =
+  gallery). A bare "top left" in the text, with no render/HTML signal, is not
+  enough to flag. When it is a real reflowing gallery: praise the captioning
+  instinct, then recommend a single-column layout with a per-photo caption.
 - **Unseen image content (conditional working note)** — with **no render**,
   soften any flow/structure observation that depends on what's inside an image and
   give the writer an out ("…but I can't see the image just above it"). With a
