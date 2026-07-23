@@ -126,7 +126,7 @@ export function Profile() {
         <div className="mt-8 rounded-2xl border border-border bg-surface p-7 shadow-sm">
           <h2 className="font-heading text-xl font-semibold">Your private review address</h2>
           <p className="mt-2 leading-relaxed text-muted">
-            Send a test email to this address:
+            Send a test email here to get your report in about 83 seconds.
           </p>
           {loading ? (
             <p className="mt-4 h-12 animate-pulse rounded-lg bg-band-emerald/60" />
