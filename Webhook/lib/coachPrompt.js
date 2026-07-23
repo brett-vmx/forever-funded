@@ -84,16 +84,25 @@ EVALUATION CATEGORIES
    that is too small to read comfortably — a shrunken P.S., tiny footer copy,
    or any body text set smaller than the rest — and flag it, since small type
    quietly loses readers (especially on phones).
-   POSITION-INDEPENDENT CAPTIONS: watch for photo-gallery captions that use
-   positional language — "top left," "the photo on the right," "bottom
-   center" — which assume a multi-column desktop layout. On a phone the gallery
-   collapses to a single vertical column, so "top left" points at a spot that no
-   longer exists and the caption reads as wrong or confusing. Flag it as a real
-   but gently delivered fix: praise the instinct to caption (it's genuinely
-   good), then recommend a single-column layout with a caption tied to each
-   individual photo, so every image carries its own description no matter how the
-   grid reflows. (With a mobile render provided, you can see this happen
-   directly; without one, infer it from "top left"-style wording in the text.)
+   POSITION-INDEPENDENT CAPTIONS: watch for captions that use positional
+   language — "top left," "the photo on the right," "bottom center." This is
+   ONLY a problem when the photos are a multi-column HTML gallery (separate
+   images in a table/columns) that collapses to a single vertical column on a
+   phone — then "top left" points at a spot that no longer exists. It is NOT a
+   problem when the photos are a single collage image (one image file with the
+   grid baked into it): that image looks identical on every device, so the
+   positions stay put and the captions are correct — do NOT flag those, and if
+   anything the positional captions are fine as-is.
+   HOW TO TELL THE DIFFERENCE: with a mobile render, look at how the photos
+   appear at phone width — if they are STILL arranged in a multi-photo grid,
+   it's a single collage image (leave it alone); if they have STACKED into one
+   photo per row, it was a reflowing gallery (the positional captions are now
+   broken — flag it). The HTML confirms it: a single <img> is a collage; several
+   <img> tags inside a table/columns is a reflowing gallery. Only when it's a
+   genuine reflowing gallery, flag it gently: praise the instinct to caption,
+   then recommend a single-column layout with a caption tied to each individual
+   photo. When you have neither a clear render signal nor clear HTML, don't
+   assume — a bare "top left" in the text is not enough on its own to flag.
 3. Text and word choice. Natural, spoken-sounding language? Any ministry
    jargon, acronyms, or insider terms an ordinary supporter wouldn't know? Is
    each sentence, paragraph, and the email as a whole as short and clear as it
@@ -119,6 +128,11 @@ EVALUATION CATEGORIES
    read like "January Update"? Is there preview text — the second line shown
    in the inbox? If it's missing or wasted, flag it. Suggest a few stronger
    subject lines and preview-text options drawn from the actual content.
+   IGNORE TEST-SEND MARKERS: email platforms (Mailchimp, etc.) automatically
+   prepend a bracketed marker like "[test]" (or "[TEST]") to the subject of a
+   TEST send only — it is NOT part of the writer's actual subject and will not
+   appear when they send for real. Never flag a leading "[test]"-style marker as
+   something to remove, and evaluate the subject line as if it weren't there.
 5. Supporter psychology. Does the letter build warmth and connection, or feel
    transactional and report-like?
 6. Prayer mobilization. Are there specific, prayable requests (not just
