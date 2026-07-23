@@ -5,10 +5,12 @@ import { useSession } from '../lib/useSession'
 import { REVIEW_DOMAIN } from '../lib/constants'
 import { Logo } from '../components/ui/LogoMark'
 import { Button } from '../components/ui/Button'
-import {
-  ProfileDetailsForm,
-  type DeclaredFields,
-} from '../components/profile/ProfileDetailsForm'
+import { type DeclaredFields } from '../components/profile/ProfileDetailsForm'
+import { AccountTab } from '../components/profile/AccountTab'
+import { ReportsTab } from '../components/profile/ReportsTab'
+import { SubscriptionTab } from '../components/profile/SubscriptionTab'
+import { getAccountStatus } from '../lib/accountStatus'
+import { formatDate } from '../lib/formatDate'
 
 type ProfileRow = {
   review_slug: string
@@ -17,14 +19,8 @@ type ProfileRow = {
   tier: string
 } & DeclaredFields
 
-/** e.g. "August 15, 2026" */
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
+const TABS = ['Account', 'Reports', 'Subscription'] as const
+type Tab = (typeof TABS)[number]
 
 /** Whole days from now until `iso` (negative if already past). */
 function daysUntil(iso: string): number {
@@ -44,6 +40,7 @@ export function Profile() {
   const [copied, setCopied] = useState(false)
   // null while unresolved; true only on someone's very first /profile visit.
   const [isFirstVisit, setIsFirstVisit] = useState<boolean | null>(null)
+  const [activeTab, setActiveTab] = useState<Tab>('Account')
 
   useEffect(() => {
     if (!supabase || !userId) {
@@ -89,10 +86,12 @@ export function Profile() {
     navigate('/', { replace: true })
   }
 
-  const used =
-    profile && remaining !== null ? Math.max(0, profile.reviews_limit - remaining) : null
   const expiresSoon =
     profile?.access_expires_at != null && daysUntil(profile.access_expires_at) <= 7
+  const formattedExpiresAt = profile?.access_expires_at
+    ? formatDate(profile.access_expires_at)
+    : null
+  const accountStatus = profile ? getAccountStatus(profile) : null
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -123,118 +122,43 @@ export function Profile() {
           </p>
         )}
 
-        <div className="mt-8 rounded-2xl border border-border bg-surface p-7 shadow-sm">
-          <h2 className="font-heading text-xl font-semibold">Your private review address</h2>
-          <p className="mt-2 leading-relaxed text-muted">
-            Send a test email here to get your report in about 83 seconds.
-          </p>
-          {loading ? (
-            <p className="mt-4 h-12 animate-pulse rounded-lg bg-band-emerald/60" />
-          ) : reviewAddress ? (
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-              <p className="min-w-0 flex-1 truncate rounded-lg bg-band-emerald px-4 py-3 font-mono text-sm text-primary-dark">
-                {reviewAddress}
-              </p>
-              <Button variant="ghost" size="sm" className="shrink-0" onClick={copyAddress}>
-                {copied ? 'Copied ✓' : 'Copy'}
-              </Button>
-            </div>
-          ) : (
-            <p className="mt-4 rounded-lg bg-band-emerald px-4 py-3 text-sm text-primary-dark">
-              Check your inbox for a welcome email with your review address.
-            </p>
-          )}
+        <div role="tablist" aria-label="Profile sections" className="mt-8 flex gap-6 border-b border-border">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              onClick={() => setActiveTab(tab)}
+              className={`-mb-px border-b-2 px-1 pb-3 text-sm font-semibold transition-colors ${
+                activeTab === tab
+                  ? 'border-primary text-primary-dark'
+                  : 'border-transparent text-muted hover:text-ink'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-border bg-surface p-7 shadow-sm">
-          <h2 className="font-heading text-xl font-semibold">Your account</h2>
-          {loading ? (
-            <div className="mt-4 space-y-3">
-              <div className="h-4 w-2/3 animate-pulse rounded bg-band-emerald/60" />
-              <div className="h-4 w-1/2 animate-pulse rounded bg-band-emerald/60" />
-            </div>
-          ) : profile ? (
-            <dl className="mt-4 space-y-4">
-              <div>
-                <dt className="text-sm font-medium text-muted">Reviews</dt>
-                <dd className="mt-1 leading-relaxed">
-                  {used !== null ? (
-                    <>
-                      You’ve used{' '}
-                      <strong className="font-semibold text-ink">{used}</strong> of{' '}
-                      <strong className="font-semibold text-ink">
-                        {profile.reviews_limit}
-                      </strong>{' '}
-                      reviews.{' '}
-                      <span className="text-primary-dark">
-                        <strong className="font-semibold">{remaining}</strong> remaining.
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-muted">
-                      {profile.reviews_limit} reviews included.
-                    </span>
-                  )}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-muted">Access</dt>
-                <dd className="mt-1 leading-relaxed">
-                  {profile.access_expires_at ? (
-                    <>
-                      Your access expires on{' '}
-                      <strong className="font-semibold text-ink">
-                        {formatDate(profile.access_expires_at)}
-                      </strong>
-                      .
-                      {expiresSoon && (
-                        <span className="mt-1 block text-sm text-brick">
-                          That’s coming up soon, be sure to use your remaining reviews.
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    'No expiration.'
-                  )}
-                </dd>
-              </div>
-            </dl>
-          ) : (
-            <p className="mt-4 leading-relaxed text-muted">
-              We couldn’t load your account details just now. Try refreshing the page.
-            </p>
-          )}
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-border bg-surface p-7 shadow-sm">
-          <h2 className="font-heading text-xl font-semibold">Your details (optional)</h2>
-          <p className="mt-2 leading-relaxed text-muted">
-            This helps us know you and gives the Coach helpful background. You can leave
-            any of it blank.
-          </p>
-          {loading ? (
-            <div className="mt-5 space-y-4">
-              <div className="h-9 animate-pulse rounded-lg bg-band-emerald/60" />
-              <div className="h-9 animate-pulse rounded-lg bg-band-emerald/60" />
-              <div className="h-24 animate-pulse rounded-lg bg-band-emerald/60" />
-            </div>
-          ) : profile ? (
-            <ProfileDetailsForm
-              initial={{
-                first_name: profile.first_name,
-                last_name: profile.last_name,
-                city: profile.city,
-                country: profile.country,
-                ministry_title: profile.ministry_title,
-                organization_name: profile.organization_name,
-                college_campus: profile.college_campus,
-                coach_instructions: profile.coach_instructions,
-              }}
+        <div role="tabpanel" className="mt-6">
+          {activeTab === 'Account' && (
+            <AccountTab
+              loading={loading}
+              profile={profile}
+              remaining={remaining}
+              formattedExpiresAt={formattedExpiresAt}
+              expiresSoon={expiresSoon}
+              accountStatus={accountStatus}
+              email={email}
+              reviewAddress={reviewAddress}
+              copied={copied}
+              onCopyAddress={copyAddress}
             />
-          ) : null}
+          )}
+          {activeTab === 'Reports' && <ReportsTab userId={userId} />}
+          {activeTab === 'Subscription' && <SubscriptionTab accountStatus={accountStatus} />}
         </div>
-
-        {/* TODO(v2): review history. */}
       </main>
     </div>
   )

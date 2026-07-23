@@ -39,6 +39,7 @@ import { callCoach } from '../lib/anthropic.js';
 import { sendReport, sendTrialLimitEmail, sendWelcomeEmail } from '../lib/postmark.js';
 import { wrapReportWithStyles, promoteForwardedNote } from '../lib/reportTemplate.js';
 import { shouldRender, renderEmailTiles } from '../lib/render.js';
+import { handleReportPdf } from './report-pdf.js';
 
 export default {
   async fetch(request, env) {
@@ -51,6 +52,12 @@ export default {
     // not Postmark) with a different payload shape and its own auth check.
     if (url.pathname === '/hooks/new-profile') {
       return handleNewProfileHook(request, env);
+    }
+
+    // Called from the Website's /profile Reports tab — a signed-in user
+    // downloading one of their own past reports as a PDF. See api/report-pdf.js.
+    if (url.pathname === '/api/report-pdf') {
+      return handleReportPdf(request, env);
     }
 
     if (url.pathname !== '/api/inbound') {

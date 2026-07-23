@@ -232,7 +232,7 @@ export function ProfileDetailsForm({ initial }: { initial: DeclaredFields }) {
 
       <div>
         <label htmlFor="coach_instructions" className={labelClass}>
-          Context for the Coach
+          Additional context for the Coach
         </label>
         <textarea
           id="coach_instructions"

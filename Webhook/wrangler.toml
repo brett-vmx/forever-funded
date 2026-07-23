@@ -16,6 +16,14 @@ ANTHROPIC_MODEL = "claude-sonnet-4-6"
 FROM_EMAIL = "coach@review.foreverfunded.org"
 REVIEW_DOMAIN = "review.foreverfunded.org"
 
+# Public anon key (same one Website/.env's VITE_SUPABASE_ANON_KEY uses) — safe
+# to commit; it's RLS-gated and meaningless without a valid user access token.
+# Used only to build a per-request, user-scoped Supabase client (see
+# lib/supabase.js's getUserClient) so RLS enforces "only your own rows" on
+# endpoints like /api/report-pdf — never used for privileged access, that's
+# what SUPABASE_SERVICE_ROLE_KEY (a real secret, below) is for.
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibnF1ZG54eXVnemN1eHJ3bnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NzgxMTUsImV4cCI6MjA5ODU1NDExNX0.Soe1SjJBNIjHGDNDtyCKLeBWmlXeMpiWPwOelx1QQus"
+
 # Visual rendering soft-rollout gate (v2 path only). Comma-separated list of
 # profile emails that get a mobile visual render attached to the Coach call.
 # Everyone else stays text-only. Set to "*" to enable for ALL v2 submissions.

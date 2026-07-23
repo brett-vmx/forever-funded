@@ -15,6 +15,21 @@ function getClient(env) {
 }
 
 /**
+ * User-scoped client — anon key + the caller's own access token attached as
+ * the Authorization header, so Postgres sees auth.uid() as THAT user and RLS
+ * enforces "only your own rows" automatically. Use this (never the
+ * service-role client above) for any endpoint that reads data on behalf of a
+ * signed-in user, e.g. /api/report-pdf — the RLS check IS the entire
+ * authorization logic; there is nothing else to get wrong.
+ */
+export function getUserClient(env, accessToken) {
+  return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+    auth: { persistSession: false },
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
+}
+
+/**
  * Looks up a subscriber by the token found in the recipient address.
  * Returns null if no match — the webhook should handle that as
  * "unknown/invalid review address" rather than erroring loudly.
