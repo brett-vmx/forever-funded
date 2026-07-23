@@ -117,9 +117,11 @@ export function Profile() {
             </>
           )}
         </h1>
-        <p className="mt-4 text-lg leading-relaxed text-muted">
-          Welcome to Forever Funded. You’re all set to start sending drafts to the Coach.
-        </p>
+        {isFirstVisit && (
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            Welcome to Forever Funded. You’re all set to start sending drafts to the Coach.
+          </p>
+        )}
 
         <div className="mt-8 rounded-2xl border border-border bg-surface p-7 shadow-sm">
           <h2 className="font-heading text-xl font-semibold">Your private review address</h2>
