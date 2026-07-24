@@ -45,15 +45,30 @@ export async function sendReport(env, { toEmail, originalSubject, reportHtml }) 
  * Reports tab, where View / Talk to Coach / Download now live. Not applied to
  * the stored report_body itself, so the in-app view and PDF download stay
  * exactly as generated.
+ *
+ * Styled as a callout box matching the same left-border + tinted-background
+ * structural pattern as the forwarded-email note (see reportTemplate.js's
+ * `.ff-note` class), in the brand green instead of that box's tan/olive.
+ * Uses fully inline styles rather than a shared CSS class: this gets
+ * appended after the document's own <style> block already exists, and many
+ * email clients strip <style> blocks anyway (same reasoning as the PDF's
+ * inline-styled referral footer in api/report-pdf.js).
+ *
+ * Inserted INSIDE reportTemplate.js's `.ff-report` container (before its
+ * closing </div>, not after it) so it inherits that container's left/right
+ * padding and font-family — same alignment and font as the rest of the
+ * report — rather than sitting flush against the page edge in a fallback
+ * font, which is what appending after </div> would do.
  */
 function addChatHint(reportHtml) {
   const hint = `
-    <p style="margin-top:24px; font-size:14px; color:#666666;">
-      Want to talk to Coach about this report? Use the Reports tab in your account.
-    </p>`;
-  return reportHtml.includes('</body>')
-    ? reportHtml.replace('</body>', `${hint}</body>`)
-    : reportHtml + hint;
+    <div style="margin-top:24px; padding:12px 16px; background:#f0faf6; border-left:3px solid #059669; border-radius:3px;">
+      <p style="margin:0 0 4px; font-weight:700; color:#1a1a1a;">Talk to Coach</p>
+      <p style="margin:0; color:#1a1a1a;">Want to talk to Coach about this report? Use the Reports tab in your account.</p>
+    </div>`;
+  return /<\/div>\s*<\/body>/i.test(reportHtml)
+    ? reportHtml.replace(/<\/div>(\s*)<\/body>/i, (_match, trailingSpace) => `${hint}\n  </div>${trailingSpace}</body>`)
+    : reportHtml.replace('</body>', `${hint}</body>`);
 }
 
 /**
