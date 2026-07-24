@@ -55,6 +55,7 @@ export function ReportDialog({
   const [sending, setSending] = useState(false)
   const [chatError, setChatError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (!supabase) {
@@ -120,6 +121,17 @@ export function ReportDialog({
     if (segment === 'report') resizeIframe()
   }, [segment, reportHtml])
 
+  // Grows the textarea to fit multi-line input, capped by the max-h-32 class
+  // below (128px) — resetting to 'auto' first lets it shrink back down too,
+  // e.g. after a long draft is sent and the box should collapse to one line.
+  useEffect(() => {
+    const el = textareaRef.current
+    if (el) {
+      el.style.height = 'auto'
+      el.style.height = `${Math.min(el.scrollHeight, 128)}px`
+    }
+  }, [draft])
+
   async function sendMessage() {
     const text = draft.trim()
     if (!text || !supabase || sending) return
@@ -160,6 +172,7 @@ export function ReportDialog({
     }
   }
 
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto p-4 py-8"
@@ -192,7 +205,7 @@ export function ReportDialog({
                 segment === 'conversation' ? 'bg-surface text-ink shadow-sm' : 'text-primary-dark'
               }`}
             >
-              Conversation
+              Talk to Coach
             </button>
           </div>
           <button
@@ -272,12 +285,13 @@ export function ReportDialog({
 
           <div className="flex items-end gap-2 border-t border-border px-4 py-3">
             <textarea
+              ref={textareaRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={handleKeyDown}
               rows={1}
               placeholder="Ask Coach a question…"
-              className="max-h-32 flex-1 resize-none rounded-xl border border-border bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+              className="max-h-32 flex-1 resize-none overflow-y-auto rounded-xl border border-border bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-primary"
             />
             <button
               type="button"
