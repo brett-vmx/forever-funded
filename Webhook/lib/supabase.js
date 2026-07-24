@@ -185,3 +185,31 @@ export async function failReview(env, reviewId, errorMessage) {
 
   if (error) throw error;
 }
+
+/**
+ * Reads one review's chat history, oldest first. Service-role — ownership is
+ * confirmed separately via an RLS-scoped lookup on `reviews` before this is
+ * ever called (see api/report-chat.js), so this just needs the review_id.
+ */
+export async function getReviewMessages(env, reviewId) {
+  const { data, error } = await getClient(env)
+    .from('review_messages')
+    .select('role, content')
+    .eq('review_id', reviewId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+/**
+ * Records one chat exchange (a user row and the assistant's reply) in a
+ * single insert. Service-role only — review_messages has no insert policy
+ * for clients (see db/migrations/0011_review_messages.sql); all writes go
+ * through here, matching the rest of the pipeline's read-via-RLS,
+ * write-via-service-role split.
+ */
+export async function insertReviewMessages(env, rows) {
+  const { error } = await getClient(env).from('review_messages').insert(rows);
+  if (error) throw error;
+}

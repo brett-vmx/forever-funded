@@ -34,9 +34,26 @@ export async function sendReport(env, { toEmail, originalSubject, reportHtml }) 
     From: `Forever Funded Coach <${env.FROM_EMAIL}>`,
     To: toEmail,
     Subject: `Here's your report on "${originalSubject || 'your draft'}"`,
-    HtmlBody: reportHtml,
+    HtmlBody: addChatHint(reportHtml),
     MessageStream: 'outbound', // adjust if you named your transactional stream differently
   });
+}
+
+/**
+ * Additive to the emailed copy only (part-d-chat-addendum.md) — points
+ * readers who only ever see the report in their inbox back to the portal's
+ * Reports tab, where View / Talk to Coach / Download now live. Not applied to
+ * the stored report_body itself, so the in-app view and PDF download stay
+ * exactly as generated.
+ */
+function addChatHint(reportHtml) {
+  const hint = `
+    <p style="margin-top:24px; font-size:14px; color:#666666;">
+      Want to talk to Coach about this report? Use the Reports tab in your account.
+    </p>`;
+  return reportHtml.includes('</body>')
+    ? reportHtml.replace('</body>', `${hint}</body>`)
+    : reportHtml + hint;
 }
 
 /**

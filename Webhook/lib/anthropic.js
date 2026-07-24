@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { COACH_SYSTEM_PROMPT } from './coachPrompt.js';
+import { COACH_CHAT_ADDENDUM } from './coachChatPrompt.js';
 
 /**
  * Calls the Coach with everything it needs for one evaluation and returns
@@ -88,6 +89,28 @@ ${letterHtml ? `LETTER HTML (use this only to judge structure — columns, links
     max_tokens: 6000,
     system: COACH_SYSTEM_PROMPT,
     messages: [{ role: 'user', content }],
+  });
+
+  const textBlock = response.content.find((block) => block.type === 'text');
+  return textBlock ? textBlock.text : '';
+}
+
+/**
+ * Continues a conversation about a past report (see api/report-chat.js).
+ * `messages` is the full turn history the caller already assembled (a
+ * context-setting turn for this review, then prior review_messages, then the
+ * new user message) — this just sends it under the Coach's system prompt
+ * plus the conversation-mode addendum, which overrides the report's strict
+ * HTML output contract in favor of plain conversational replies.
+ */
+export async function callCoachChat(env, { messages }) {
+  const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+
+  const response = await anthropic.messages.create({
+    model: env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
+    max_tokens: 1024,
+    system: `${COACH_SYSTEM_PROMPT}\n\n${COACH_CHAT_ADDENDUM}`,
+    messages,
   });
 
   const textBlock = response.content.find((block) => block.type === 'text');

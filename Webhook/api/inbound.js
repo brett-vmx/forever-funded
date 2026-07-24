@@ -40,6 +40,7 @@ import { sendReport, sendTrialLimitEmail, sendWelcomeEmail } from '../lib/postma
 import { wrapReportWithStyles, promoteForwardedNote } from '../lib/reportTemplate.js';
 import { shouldRender, renderEmailTiles } from '../lib/render.js';
 import { handleReportPdf } from './report-pdf.js';
+import { handleReportChat } from './report-chat.js';
 
 export default {
   async fetch(request, env) {
@@ -58,6 +59,12 @@ export default {
     // downloading one of their own past reports as a PDF. See api/report-pdf.js.
     if (url.pathname === '/api/report-pdf') {
       return handleReportPdf(request, env);
+    }
+
+    // Called from the Website's Reports tab — a signed-in user continuing a
+    // conversation about one of their own past reports. See api/report-chat.js.
+    if (url.pathname === '/api/report-chat') {
+      return handleReportChat(request, env);
     }
 
     if (url.pathname !== '/api/inbound') {

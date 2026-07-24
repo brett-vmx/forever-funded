@@ -2,13 +2,25 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { formatDate } from '../../lib/formatDate'
 import { COACH_API_URL } from '../../lib/constants'
-import { ReportViewModal } from './ReportViewModal'
+import { ReportDialog } from './ReportDialog'
 
 function EyeIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
+function ChatIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"
+      />
     </svg>
   )
 }
@@ -34,7 +46,10 @@ type ReviewRow = {
 export function ReportsTab({ userId }: { userId: string | undefined }) {
   const [reviews, setReviews] = useState<ReviewRow[] | null>(null)
   const [loading, setLoading] = useState(true)
-  const [openReview, setOpenReview] = useState<ReviewRow | null>(null)
+  const [dialogState, setDialogState] = useState<{
+    review: ReviewRow
+    segment: 'report' | 'conversation'
+  } | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   async function downloadPdf(review: ReviewRow) {
@@ -114,12 +129,21 @@ export function ReportsTab({ userId }: { userId: string | undefined }) {
                   <div className="flex shrink-0 items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setOpenReview(review)}
+                      onClick={() => setDialogState({ review, segment: 'report' })}
                       aria-label="View report"
                       title="View report"
                       className="flex h-11 w-11 items-center justify-center rounded-full bg-band-emerald text-primary-dark transition-colors duration-150 hover:bg-primary-dark hover:text-white"
                     >
                       <EyeIcon />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDialogState({ review, segment: 'conversation' })}
+                      aria-label="Talk to Coach"
+                      title="Talk to Coach"
+                      className="flex h-11 w-11 items-center justify-center rounded-full bg-band-emerald text-primary-dark transition-colors duration-150 hover:bg-primary-dark hover:text-white"
+                    >
+                      <ChatIcon />
                     </button>
                     <button
                       type="button"
@@ -148,11 +172,12 @@ export function ReportsTab({ userId }: { userId: string | undefined }) {
         )}
       </div>
 
-      {openReview && (
-        <ReportViewModal
-          reviewId={openReview.id}
-          subject={openReview.subject}
-          onClose={() => setOpenReview(null)}
+      {dialogState && (
+        <ReportDialog
+          reviewId={dialogState.review.id}
+          subject={dialogState.review.subject}
+          initialSegment={dialogState.segment}
+          onClose={() => setDialogState(null)}
         />
       )}
     </>
