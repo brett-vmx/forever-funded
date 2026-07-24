@@ -16,7 +16,7 @@
 import {
   extractToken,
   isForwarded,
-  splitContext,
+  parseSubmissionBody,
   countWords,
   estimateReadMinutes,
   htmlByteSize,
@@ -137,7 +137,7 @@ export default {
 
       // --- 3. Parse the email: forward detection, context delimiter ---
       const forwardedEmail = isForwarded(subject, textBody);
-      const { context, letter } = splitContext(textBody);
+      const { context, letter } = parseSubmissionBody(textBody);
 
       // --- 4. Compute length/deliverability metrics (deterministic, not AI) ---
       const metrics = {
@@ -222,7 +222,7 @@ async function handleV2Submission(env, payload, profile, { subject, textBody, ht
     }
 
     const forwardedEmail = isForwarded(subject, textBody);
-    const { context, letter } = splitContext(textBody);
+    const { context, letter } = parseSubmissionBody(textBody);
     const metrics = {
       htmlBytes: htmlByteSize(htmlBody),
       wordCount: countWords(letter),
